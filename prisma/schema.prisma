@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  isAdmin   Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamento com carrinho (1 para 1)
+  cart      Cart?
+
+  @@map("users")
+}
+
+
+model Product {
+  id          Int    @id @default(autoincrement())
+  name        String
+  brand       String
+  category    String
+  price       Int    // Preço em centavos (ex: 2599 = R$ 25,99)
+  stock       Int
+  description String // Corrigido: era "Description"
+  
+  // URLs das imagens
+  imageUrl    String? // Imagem principal
+  images      ProductImage[] // Múltiplas imagens opcionais
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamento com itens do carrinho
+  cartItems   CartItem[]
+
+  @@map("products")
+}
+
+// Tabela para múltiplas imagens por produto (opcional)
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  url       String  // URL da imagem
+  alt       String? // Texto alternativo
+  isMain    Boolean @default(false) // Se é a imagem principal
+  
+  // Relacionamento com produto
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+
+  @@map("product_images")
+}
+
+// Carrinho de compras (1 carrinho por usuário)
+model Cart {
+  id        Int      @id @default(autoincrement())
+  
+  // Relacionamento com usuário (1 para 1)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int      @unique
+  
+  // Itens do carrinho
+  items     CartItem[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("carts")
+}
+
+// Itens dentro do carrinho
+model CartItem {
+  id       Int @id @default(autoincrement())
+  
+  // Relacionamento com carrinho
+  cart     Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId   Int
+  
+  // Relacionamento com produto
+  product  Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  
+  // Quantidade do produto no carrinho
+  quantity Int     @default(1)
+  
+  // Preço no momento da adição (para histórico)
+  priceAtTime Int
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Um produto só pode estar uma vez no carrinho por usuário
+  @@unique([cartId, productId])
+  @@map("cart_items")
+}
