@@ -9,9 +9,6 @@ export class ProductsService {
   async create(createProductDto: Prisma.ProductCreateInput) {
     return this.databaseService.product.create({
       data: createProductDto,
-      include: {
-        images: true,
-      },
     });
   }
 
@@ -45,9 +42,7 @@ export class ProductsService {
 
     return this.databaseService.product.findMany({
       where,
-      include: {
-        images: true,
-      },
+
       orderBy: {
         createdAt: 'desc',
       },
@@ -57,9 +52,6 @@ export class ProductsService {
   async findOne(id: number) {
     return this.databaseService.product.findUnique({
       where: { id },
-      include: {
-        images: true,
-      },
     });
   }
 
@@ -67,9 +59,6 @@ export class ProductsService {
     return this.databaseService.product.update({
       where: { id },
       data: updateProductDto,
-      include: {
-        images: true,
-      },
     });
   }
 
@@ -87,9 +76,6 @@ export class ProductsService {
           mode: 'insensitive',
         },
       },
-      include: {
-        images: true,
-      },
     });
   }
 
@@ -100,9 +86,6 @@ export class ProductsService {
           contains: brand,
           mode: 'insensitive',
         },
-      },
-      include: {
-        images: true,
       },
     });
   }

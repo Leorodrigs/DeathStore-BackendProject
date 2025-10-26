@@ -15,11 +15,7 @@ export class CartService {
       include: {
         items: {
           include: {
-            product: {
-              include: {
-                images: true,
-              },
-            },
+            product: true,
           },
         },
       },
@@ -31,11 +27,7 @@ export class CartService {
         include: {
           items: {
             include: {
-              product: {
-                include: {
-                  images: true,
-                },
-              },
+              product: true,
             },
           },
         },
@@ -102,11 +94,7 @@ export class CartService {
         where: { id: existingItem.id },
         data: { quantity: newQuantity },
         include: {
-          product: {
-            include: {
-              images: true,
-            },
-          },
+          product: true,
         },
       });
     } else {
@@ -118,11 +106,7 @@ export class CartService {
           priceAtTime: product.price,
         },
         include: {
-          product: {
-            include: {
-              images: true,
-            },
-          },
+          product: true,
         },
       });
     }
@@ -157,11 +141,7 @@ export class CartService {
       where: { id: itemId },
       data: { quantity },
       include: {
-        product: {
-          include: {
-            images: true,
-          },
-        },
+        product: true,
       },
     });
   }
